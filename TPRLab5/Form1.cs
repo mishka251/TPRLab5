@@ -39,6 +39,10 @@ namespace TPRLab5
             dgvInput.ColumnCount = (int)nuAlternatives.Value + 1;
             dgvCrits.ColumnCount = (int)nuAlternatives.Value;
             dgvInput.RowCount = (int)nuCriteries.Value;
+            dgvCrits.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dgvInput.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dgvCrits.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dgvInput.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
         }
         delegate double P(double d);
 
@@ -49,7 +53,7 @@ namespace TPRLab5
         }
         double P2(double d)
         {
-            double q = 3, s = 3;
+            double q = 1, s = 3;
             return d <= q ? 0 : d <= s ? 0.5 : 1;
         }
         double P3(double d)
@@ -62,14 +66,6 @@ namespace TPRLab5
         {
             try
             {
-                double q = 0, s = 1;
-                // P[] p =
-                //  {
-                //  (double d) => d > 0 ? 1 : 0,
-                //     (double d) => d > q ? 1 : 0,
-                //     (double d)=>d<=0?0:d<=s?d/s:1,
-                //     (double d)=>d<=0?0:d<=s?0.5:1
-                //};
                 P[] p =
                  {
                     P1, P2, P3
@@ -114,12 +110,7 @@ namespace TPRLab5
                 }
 
                 Matrix mat2 = new Matrix(alts * crits, alts);
-                //for(int i=0; i<alts*crits; i++)
-                //{
-                //    int critNum = i / alts;
-                //    for(int j=0; j<alts; j++)
-                //        mast2[i, j] = 
-                //}
+
                 for (int alt1 = 0; alt1 < alts; alt1++)
                     for (int alts2 = 0; alts2 < alts; alts2++)
                     {
@@ -136,8 +127,8 @@ namespace TPRLab5
                 dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
                 dgv.RowCount = crits * alts + 1;
 
-                for (int i = 0; i < dgv.RowCount-1; i++)
-                    dgv[0, i+1].Value = "P" + (i  / alts + 1).ToString();
+                for (int i = 0; i < dgv.RowCount - 1; i++)
+                    dgv[0, i + 1].Value = "P" + (i / alts + 1).ToString();
 
                 for (int i = 0; i < dgv.RowCount - 1; i++)
                     dgv[1, i + 1].Value = "a" + (i % alts + 1).ToString();
@@ -147,7 +138,7 @@ namespace TPRLab5
 
                 for (int i = 0; i < mat2.n; i++)
                     for (int j = 0; j < mat2.m; j++)
-                        dgv[j+2, i+1].Value = mat2[i, j];
+                        dgv[j + 2, i + 1].Value = mat2[i, j];
 
                 this.Controls.Add(dgv);
                 this.AutoScroll = true;
@@ -159,15 +150,26 @@ namespace TPRLab5
                 x += dgv.Width + 20;
 
                 Matrix pi = new Matrix(alts, alts);
-                for(int i=0; i<alts; i++)
-                    for(int j=0; j<alts; j++)
+                double[] F_min = new double[alts], F_plus = new double[alts], F = new double[alts];
+                for (int i = 0; i < alts; i++)
+                    for (int j = 0; j < alts; j++)
                     {
                         double sum = 0;
-                        for(int crit = 0; crit<crits; crit++)
-                            sum+=w[crit]* p[crit](d[crit][i, j]);
+                        for (int crit = 0; crit < crits; crit++)
+                            sum += w[crit] * p[crit](d[crit][i, j]);
                         pi[i, j] = sum;
                     }
 
+                for (int i = 0; i < alts; i++)
+                {
+                    F_min[i] = 0;
+                    F_plus[i] = 0;
+                    for (int j = 0; j < alts; j++)
+                        F_min[i] += pi[j, i];
+                    for (int j = 0; j < alts; j++)
+                        F_plus[i] += pi[i, j];
+                    F[i] = F_plus[i] - F_min[i];
+                }
 
                 dgv = new DataGridView();
                 dgv.Top = y;
@@ -178,7 +180,7 @@ namespace TPRLab5
                 dgv.RowCount = alts + 2;
 
                 for (int i = 0; i < alts; i++)
-                    dgv[i+1, 0].Value = "pi(ai, a" + (i + 1).ToString() + ")";
+                    dgv[i + 1, 0].Value = "pi(ai, a" + (i + 1).ToString() + ")";
                 dgv[alts + 1, 0].Value = "Ф+";
 
                 for (int i = 0; i < alts; i++)
@@ -189,6 +191,37 @@ namespace TPRLab5
                     for (int j = 0; j < alts; j++)
                         dgv[j + 1, i + 1].Value = pi[i, j];
 
+                for (int i = 0; i < alts; i++)
+                    dgv[alts + 1, i + 1].Value = F_plus[i];
+
+                for (int i = 0; i < alts; i++)
+                    dgv[i + 1, alts + 1].Value = F_min[i];
+
+                this.Controls.Add(dgv);
+
+                x += dgv.Width;
+                dgv = new DataGridView();
+                dgv.Top = y;
+                dgv.Left = x;
+
+                dgv.ColumnCount = alts + 1;
+                dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                dgv.RowCount =  2;
+
+                dgv[0, 0].Value = "a";
+                dgv[0, 1].Value = "F";
+                
+                SortedDictionary<double, string> F_alts = new SortedDictionary<double, string>();
+                for (int i = 0; i < alts; i++)
+                    F_alts.Add(F[i], dgvInput[0, i].Value.ToString());
+
+                int iter = 1;
+                foreach(var par in F_alts.Reverse())
+                {
+                    dgv[iter, 0].Value = par.Value;
+                    dgv[iter, 1].Value = par.Key;
+                    iter++;
+                }
                 this.Controls.Add(dgv);
             }
             catch (Exception ex)

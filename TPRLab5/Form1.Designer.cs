@@ -31,9 +31,9 @@
             this.nuAlternatives = new System.Windows.Forms.NumericUpDown();
             this.nuCriteries = new System.Windows.Forms.NumericUpDown();
             this.dgvInput = new System.Windows.Forms.DataGridView();
+            this.Name1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvCrits = new System.Windows.Forms.DataGridView();
             this.btnStart = new System.Windows.Forms.Button();
-            this.Name1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -89,12 +89,17 @@
             this.dgvInput.Size = new System.Drawing.Size(365, 213);
             this.dgvInput.TabIndex = 2;
             // 
+            // Name1
+            // 
+            this.Name1.HeaderText = "Название";
+            this.Name1.Name = "Name1";
+            // 
             // dgvCrits
             // 
             this.dgvCrits.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvCrits.Location = new System.Drawing.Point(430, 103);
             this.dgvCrits.Name = "dgvCrits";
-            this.dgvCrits.Size = new System.Drawing.Size(304, 52);
+            this.dgvCrits.Size = new System.Drawing.Size(350, 84);
             this.dgvCrits.TabIndex = 3;
             // 
             // btnStart
@@ -106,11 +111,6 @@
             this.btnStart.Text = "Расчёт";
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
-            // 
-            // Name1
-            // 
-            this.Name1.HeaderText = "Название";
-            this.Name1.Name = "Name1";
             // 
             // label1
             // 
