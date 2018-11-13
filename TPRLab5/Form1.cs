@@ -33,7 +33,7 @@ namespace TPRLab5
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            dgvCrits.RowCount = 1;
+            dgvCrits.RowCount = 2;
             dgvInput.ColumnCount = (int)nuAlternatives.Value + 1;
             dgvCrits.ColumnCount = (int)nuAlternatives.Value;
             dgvInput.RowCount = (int)nuCriteries.Value;
@@ -161,7 +161,7 @@ namespace TPRLab5
             dgv.ColumnCount = cols;
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dgv.RowCount = rows;
-            return dgvCrits;
+            return dgv;
         }
 
 
@@ -271,12 +271,15 @@ namespace TPRLab5
 
             this.Controls.Add(dgv);
 
+            ////////////////////////////////
+            ///результаты
+            ///////////////////////////////
 
-
-            dgvEndResult[0, 0].Value = "a";
-            dgvEndResult[0, 1].Value = "F";
             dgvEndResult.RowCount = 2;
             dgvEndResult.ColumnCount = alts + 1;
+            dgvEndResult[0, 0].Value = "a";
+            dgvEndResult[0, 1].Value = "F";
+            
             int iter = 1;
             foreach (var par in F_alts.Reverse())
             {
