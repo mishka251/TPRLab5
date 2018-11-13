@@ -37,10 +37,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.dgvEndResult = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.nuAlternatives)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nuCriteries)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCrits)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvEndResult)).BeginInit();
             this.SuspendLayout();
             // 
             // nuAlternatives
@@ -104,7 +106,7 @@
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(430, 209);
+            this.btnStart.Location = new System.Drawing.Point(430, 193);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(151, 27);
             this.btnStart.TabIndex = 4;
@@ -139,11 +141,20 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "Кол-во альтернатив";
             // 
+            // dgvEndResult
+            // 
+            this.dgvEndResult.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvEndResult.Location = new System.Drawing.Point(430, 235);
+            this.dgvEndResult.Name = "dgvEndResult";
+            this.dgvEndResult.Size = new System.Drawing.Size(349, 80);
+            this.dgvEndResult.TabIndex = 8;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(809, 450);
+            this.Controls.Add(this.dgvEndResult);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -159,6 +170,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nuCriteries)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInput)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCrits)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvEndResult)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -175,6 +187,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.DataGridView dgvEndResult;
     }
 }
 
