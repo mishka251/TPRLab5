@@ -22,9 +22,6 @@ namespace TPRLab5
             dgvInput.RowCount = (int)nuAlternatives.Value;
         }
 
-
-
-
         private void nuCriteries_ValueChanged(object sender, EventArgs e)
         {
 
