@@ -88,7 +88,7 @@
             this.Name1});
             this.dgvInput.Location = new System.Drawing.Point(23, 103);
             this.dgvInput.Name = "dgvInput";
-            this.dgvInput.Size = new System.Drawing.Size(365, 213);
+            this.dgvInput.Size = new System.Drawing.Size(363, 243);
             this.dgvInput.TabIndex = 2;
             // 
             // Name1
@@ -146,7 +146,7 @@
             this.dgvEndResult.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvEndResult.Location = new System.Drawing.Point(430, 235);
             this.dgvEndResult.Name = "dgvEndResult";
-            this.dgvEndResult.Size = new System.Drawing.Size(349, 80);
+            this.dgvEndResult.Size = new System.Drawing.Size(349, 111);
             this.dgvEndResult.TabIndex = 8;
             // 
             // Form1
