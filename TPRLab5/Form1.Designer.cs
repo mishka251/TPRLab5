@@ -38,6 +38,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.dgvEndResult = new System.Windows.Forms.DataGridView();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.btnLoad = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.nuAlternatives)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nuCriteries)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInput)).BeginInit();
@@ -90,6 +92,7 @@
             this.dgvInput.Name = "dgvInput";
             this.dgvInput.Size = new System.Drawing.Size(363, 243);
             this.dgvInput.TabIndex = 2;
+            this.dgvInput.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvInput_CellValueChanged);
             // 
             // Name1
             // 
@@ -103,6 +106,7 @@
             this.dgvCrits.Name = "dgvCrits";
             this.dgvCrits.Size = new System.Drawing.Size(350, 84);
             this.dgvCrits.TabIndex = 3;
+            this.dgvCrits.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCrits_CellValueChanged);
             // 
             // btnStart
             // 
@@ -149,11 +153,33 @@
             this.dgvEndResult.Size = new System.Drawing.Size(349, 111);
             this.dgvEndResult.TabIndex = 8;
             // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(427, 16);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.TabIndex = 9;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnLoad
+            // 
+            this.btnLoad.Location = new System.Drawing.Point(573, 16);
+            this.btnLoad.Name = "btnLoad";
+            this.btnLoad.Size = new System.Drawing.Size(73, 23);
+            this.btnLoad.TabIndex = 10;
+            this.btnLoad.Text = "Load";
+            this.btnLoad.UseVisualStyleBackColor = true;
+            this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(809, 450);
+            this.Controls.Add(this.btnLoad);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.dgvEndResult);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -188,6 +214,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DataGridView dgvEndResult;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnLoad;
     }
 }
 

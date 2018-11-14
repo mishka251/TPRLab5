@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace TPRLab5
 {
@@ -21,9 +22,8 @@ namespace TPRLab5
         {
             dgvInput.RowCount = (int)nuAlternatives.Value;
             dgvInput.Rows[dgvInput.RowCount - 1].HeaderCell.Value = ("a" + dgvInput.RowCount);
+            Input();
         }
-
-
 
 
         private void nuCriteries_ValueChanged(object sender, EventArgs e)
@@ -31,7 +31,8 @@ namespace TPRLab5
             dgvInput.ColumnCount = (int)nuCriteries.Value + 1;
             dgvCrits.ColumnCount = (int)nuCriteries.Value;
             dgvCrits.Columns[dgvCrits.ColumnCount - 1].HeaderText = "w" + dgvCrits.ColumnCount;
-            dgvInput.Columns[dgvInput.ColumnCount - 1].HeaderText = "f" + (dgvInput.ColumnCount-1);
+            dgvInput.Columns[dgvInput.ColumnCount - 1].HeaderText = "f" + (dgvInput.ColumnCount - 1);
+            Input();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -54,6 +55,30 @@ namespace TPRLab5
         }
         delegate double P(double d);
 
+        P createP1()
+        {
+            return ((double d) => d <= 0 ? 0 : 1);
+        }
+        P createP2(double q)
+        {
+            return ((double d) => d <= q ? 0 : 1);
+        }
+        P createP3(double s)
+        {
+            return (double d) => d <= 0 ? 0 : d < s ? d / s : 1;
+        }
+        P createP4(double q, double s)
+        {
+            return (double d) => d <= q ? 0 : d <= s ? 0.5 : 1;
+        }
+        P createP5(double q, double s)
+        {
+            return (double d) => d <= q ? 0 : d <= s ? (d - q) / (s - q) : 1;
+        }
+        P createP6(double q, double s)
+        {
+            return (double d) => d <= q ? 0 : d <= s ? 1 - Math.Exp(-d * d / (2 * s * s)) : 1;
+        }
         double P1(double d)
         {
             double q = 5;
@@ -82,18 +107,30 @@ namespace TPRLab5
             crits = (int)nuCriteries.Value;
             alts = (int)nuAlternatives.Value;
             altNames = new string[alts];
-            for (int i = 0; i < alts; i++)
-                altNames[i] = dgvInput[0, i].Value.ToString();
+            for (int i = 0; i < alts && i < dgvInput.RowCount; i++)
+                if (dgvInput[0, i] != null && dgvInput[0, i].Value != null)
+                    altNames[i] = dgvInput[0, i].Value.ToString();
+                else
+                    altNames[i] = "не задано";
 
             critMat = new Matrix(alts, crits);
-            for (int i = 0; i < alts; i++)
-                for (int j = 0; j < crits; j++)
-                    critMat[i, j] = double.Parse(dgvInput[j + 1, i].Value.ToString());
+            for (int i = 0; i < alts && i < dgvInput.RowCount; i++)
+                for (int j = 0; j < crits && j + 1 < dgvInput.ColumnCount; j++)
+                {
+                    if (dgvInput[j + 1, i] != null && dgvInput[j + 1, i].Value != null &&
+                           double.TryParse(dgvInput[j + 1, i].Value.ToString(), out double d))
+                        critMat[i, j] = d;
+                    else
+                        critMat[i, j] = 0;
+                }
 
             w = new double[crits];
-            for (int crit = 0; crit < crits; crit++)
-                w[crit] = double.Parse(dgvCrits[crit, 0].Value.ToString());
-
+            for (int crit = 0; crit < crits && crit < dgvCrits.ColumnCount; crit++)
+                if (dgvCrits[crit, 0] != null && dgvCrits[crit, 0].Value != null
+                    && double.TryParse(dgvCrits[crit, 0].Value.ToString(), out double d))
+                    w[crit] = d;
+                else
+                    w[crit] = 0;
         }
         double[] F_min, F_plus, F;
         Matrix pi;
@@ -101,7 +138,7 @@ namespace TPRLab5
         void Calculate()
         {
 
-            P[] p = { P1, P2, P3 };
+            P[] p = { P1, P2, P3, P1, P2, P3, P1, P2, P3, P1 };
 
             d = new Matrix[crits];
             for (int c = 0; c < crits; c++)
@@ -170,6 +207,81 @@ namespace TPRLab5
             return dgv;
         }
 
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                StreamWriter sw = new StreamWriter(sfd.FileName);
+
+                sw.WriteLine(alts);
+                sw.WriteLine(crits);
+
+                for (int i = 0; i < alts; i++)
+                    sw.WriteLine(altNames[i]);
+
+                critMat.Save(sw);
+
+                for (int i = 0; i < crits; i++)
+                    sw.WriteLine(w[i]);
+
+                sw.Close();
+            }
+        }
+
+        private void btnLoad_Click(object sender, EventArgs e)
+        {
+            FileDialog sfd = new OpenFileDialog();
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                StreamReader sw = new StreamReader(sfd.FileName);
+
+                int alts = int.Parse(sw.ReadLine());
+                int crits = int.Parse(sw.ReadLine());
+                var altNames = new string[alts];
+                for (int i = 0; i < alts; i++)
+                    altNames[i] = sw.ReadLine();
+
+                var critMat = new Matrix(alts, crits);
+                critMat.Load(sw);
+
+                var w = new double[crits];
+                for (int i = 0; i < crits; i++)
+                {
+                    w[i] = double.Parse(sw.ReadLine());
+                }
+                sw.Close();
+
+                nuAlternatives.Value = alts;
+                nuCriteries.Value = crits;
+
+                for (int i = 0; i < crits; i++)
+                    dgvCrits[i, 0].Value = w[i];
+
+                for (int i = 0; i < alts; i++)
+                    dgvInput[0, i].Value = altNames[i];
+
+                for (int i = 0; i < alts; i++)
+                    for (int j = 0; j < crits; j++)
+                        dgvInput[j + 1, i].Value = critMat[i, j];
+
+            }
+
+            Input();
+
+        }
+
+        private void dgvInput_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            Input();
+        }
+
+        private void dgvCrits_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            Input();
+        }
 
         private void btnStart_Click(object sender, EventArgs e)
         {
@@ -198,12 +310,12 @@ namespace TPRLab5
             {
 
                 dgv = newDGV(x, y, alts, alts);
-                dgv.TopLeftHeaderCell.Value="Критерий" + (c+1).ToString();
+                dgv.TopLeftHeaderCell.Value = "Критерий" + (c + 1).ToString();
 
                 for (int i = 0; i < alts; i++)
                 {
                     dgv.Rows[i].HeaderCell.Value = altNames[i];
-                    dgv.Columns[i].HeaderText= altNames[i];
+                    dgv.Columns[i].HeaderText = altNames[i];
                 }
                 for (int i = 0; i < alts; i++)
                     for (int j = 0; j < alts; j++)
@@ -226,14 +338,14 @@ namespace TPRLab5
                 dgv.Rows[i + 1].HeaderCell.Value = "P" + (i / alts + 1).ToString();
 
             for (int i = 0; i < dgv.RowCount - 1; i++)
-                dgv[0, i ].Value = "a" + (i % alts + 1).ToString();
+                dgv[0, i].Value = "a" + (i % alts + 1).ToString();
 
             for (int i = 0; i < alts; i++)
                 dgv.Columns[i + 1].HeaderText = "a" + (i + 1).ToString();
 
             for (int i = 0; i < mat2.n; i++)
                 for (int j = 0; j < mat2.m; j++)
-                    dgv[j + 1, i ].Value = mat2[i, j];
+                    dgv[j + 1, i].Value = mat2[i, j];
 
 
 
@@ -260,13 +372,13 @@ namespace TPRLab5
 
             for (int i = 0; i < alts; i++)
                 for (int j = 0; j < alts; j++)
-                    dgv[j, i ].Value = pi[i, j];
+                    dgv[j, i].Value = pi[i, j];
 
             for (int i = 0; i < alts; i++)
-                dgv[alts , i].Value = F_plus[i];
+                dgv[alts, i].Value = F_plus[i];
 
             for (int i = 0; i < alts; i++)
-                dgv[i , alts].Value = F_min[i];
+                dgv[i, alts].Value = F_min[i];
 
             this.Controls.Add(dgv);
 
