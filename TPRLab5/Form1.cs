@@ -11,11 +11,16 @@ using System.IO;
 
 namespace TPRLab5
 {
+
+    public delegate double P(double d);
+
     public partial class Form1 : Form
     {
         public Form1()
         {
+            CritPs = new List<PFunc>();
             InitializeComponent();
+
         }
 
         private void nuAlternatives_ValueChanged(object sender, EventArgs e)
@@ -37,6 +42,7 @@ namespace TPRLab5
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            
             dgvCrits.RowCount = 2;
             dgvInput.ColumnCount = (int)nuAlternatives.Value + 1;
             dgvCrits.ColumnCount = (int)nuAlternatives.Value;
@@ -53,48 +59,6 @@ namespace TPRLab5
             dgvInput.Columns[dgvInput.ColumnCount - 1].HeaderText = "f" + (dgvInput.ColumnCount - 1);
             dgvInput.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
         }
-        delegate double P(double d);
-
-        P createP1()
-        {
-            return ((double d) => d <= 0 ? 0 : 1);
-        }
-        P createP2(double q)
-        {
-            return ((double d) => d <= q ? 0 : 1);
-        }
-        P createP3(double s)
-        {
-            return (double d) => d <= 0 ? 0 : d < s ? d / s : 1;
-        }
-        P createP4(double q, double s)
-        {
-            return (double d) => d <= q ? 0 : d <= s ? 0.5 : 1;
-        }
-        P createP5(double q, double s)
-        {
-            return (double d) => d <= q ? 0 : d <= s ? (d - q) / (s - q) : 1;
-        }
-        P createP6(double q, double s)
-        {
-            return (double d) => d <= q ? 0 : d <= s ? 1 - Math.Exp(-d * d / (2 * s * s)) : 1;
-        }
-        double P1(double d)
-        {
-            double q = 5;
-            return d <= q ? 0 : 1;
-        }
-        double P2(double d)
-        {
-            double q = 1, s = 3;
-            return d <= q ? 0 : d <= s ? 0.5 : 1;
-        }
-        double P3(double d)
-        {
-            double q = 3, s = 5;
-            return d <= q ? 0 : d <= s ? (d - q) / (s - q) : 1;
-        }
-
 
         string[] altNames;
         int crits;
@@ -131,14 +95,24 @@ namespace TPRLab5
                     w[crit] = d;
                 else
                     w[crit] = 0;
+
+            if (CritPs.Count > crits)
+                CritPs.RemoveAt(CritPs.Count - 1);
+            if (CritPs.Count < crits)
+            {
+                InputPForm pf = new InputPForm();
+                pf.ShowDialog();
+                CritPs.Add(pf.result);
+            }
+
+
         }
         double[] F_min, F_plus, F;
         Matrix pi;
         Matrix mat2;
+        List<PFunc> CritPs;
         void Calculate()
         {
-
-            P[] p = { P1, P2, P3, P1, P2, P3, P1, P2, P3, P1 };
 
             d = new Matrix[crits];
             for (int c = 0; c < crits; c++)
@@ -158,7 +132,7 @@ namespace TPRLab5
                 for (int alts2 = 0; alts2 < alts; alts2++)
                 {
                     for (int crit = 0; crit < crits; crit++)
-                        mat2[crit * alts + alt1, alts2] = p[crit](d[crit][alt1, alts2]);
+                        mat2[crit * alts + alt1, alts2] = CritPs[crit].func(d[crit][alt1, alts2]);
                 }
 
 
@@ -169,7 +143,7 @@ namespace TPRLab5
                 {
                     double sum = 0;
                     for (int crit = 0; crit < crits; crit++)
-                        sum += w[crit] * p[crit](d[crit][i, j]);
+                        sum += w[crit] * CritPs[crit].func(d[crit][i, j]);
                     pi[i, j] = sum;
                 }
 
@@ -226,6 +200,10 @@ namespace TPRLab5
                 for (int i = 0; i < crits; i++)
                     sw.WriteLine(w[i]);
 
+                for (int i = 0; i < crits; i++)
+                    CritPs[i].Save(sw);
+
+
                 sw.Close();
             }
         }
@@ -252,6 +230,13 @@ namespace TPRLab5
                 {
                     w[i] = double.Parse(sw.ReadLine());
                 }
+
+                CritPs.Clear();
+                for (int i = 0; i < crits; i++)
+                {
+                    CritPs.Add(PFunc.Load(sw));
+                }
+
                 sw.Close();
 
                 nuAlternatives.Value = alts;
@@ -399,6 +384,9 @@ namespace TPRLab5
                 iter++;
             }
         }
+
+
+
 
     }
 }
